@@ -1,3 +1,7 @@
-import { createAuthClient } from 'better-auth/client';
+import { createAuthClient } from 'better-auth/react';
 
-export const createClient = (baseURL: string) => createAuthClient({ baseURL });
+export const createClient = (baseURL: string) =>
+  createAuthClient({
+    baseURL,
+    fetchOptions: { credentials: 'include' },
+  });
