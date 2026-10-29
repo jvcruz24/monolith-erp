@@ -1,7 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
-import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
+import { Controller, Get } from "@nestjs/common";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 
-@Controller('me')
+@Controller("me")
 export class MeController {
   @Get()
   getMe(@Session() session: UserSession) {

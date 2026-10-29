@@ -6,6 +6,10 @@
       "env": ["DATABASE_URL"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "env": ["DATABASE_URL"]
+    },
     "dev": {
       "cache": false,
       "persistent": true,

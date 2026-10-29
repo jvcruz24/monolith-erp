@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { authClient } from '@/src/lib/auth-client';
+import { authClient } from "@/src/lib/auth-client";
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();
@@ -11,7 +11,7 @@ export default function Home() {
     return (
       <main>
         <p>Not signed in.</p>
-        <a href='http://portal.monolith.test:3000'>Go to sign-in</a>
+        <a href="http://portal.monolith.test:3000">Go to sign-in</a>
       </main>
     );
   }
