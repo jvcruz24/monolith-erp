@@ -15,9 +15,11 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/monolith_erp
       NEXT_PUBLIC_API_URL: http://api.monolith.test:5001
+      NEXT_PUBLIC_KANBAN_URL: http://kanban.monolith.test:3001
+      NEXT_PUBLIC_PORTAL_URL: http://portal.monolith.test:3000
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
