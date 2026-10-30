@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   allowedDevOrigins: ["*.monolith.test"],
+  transpilePackages: ["@repo/ui"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
