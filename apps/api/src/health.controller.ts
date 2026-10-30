@@ -9,7 +9,7 @@ export class HealthController {
 
   @Get()
   async check() {
-    const companies = await this.prisma.client.company.count();
+    const companies = await this.prisma.client.organization.count();
     return { status: "ok", companies };
   }
 }
