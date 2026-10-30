@@ -54,6 +54,7 @@ export const auth = betterAuth({
       invitationExpiresIn: 60 * 60 * 24 * 7,
       cancelPendingInvitationsOnReInvite: true,
       async sendInvitationEmail(data) {
+        // const inviteLink = `${process.env.PORTAL_URL}/accept-invitation/${data.id}?email=${encodeURIComponent(data.email)}`;
         const inviteLink = `${process.env.PORTAL_URL}/accept-invitation/${data.id}`;
         // Placeholder until the notifications module exists.
         if (process.env.NODE_ENV !== "production") {
