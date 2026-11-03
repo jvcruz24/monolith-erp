@@ -16,14 +16,30 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/monolith_erp
       NEXT_PUBLIC_API_URL: http://api.monolith.test:5001
       NEXT_PUBLIC_KANBAN_URL: http://kanban.monolith.test:3001
-      NEXT_PUBLIC_PORTAL_URL: http://portal.monolith.test:3000
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm format:check
-      - run: pnpm turbo run build typecheck lint
+      NEXT_PUBLIC_PORTAL_URL: http://portal.monolith.test
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/monolith_erp_test
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: monolith_erp_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      steps:
+        - uses: actions/checkout@v4
+        - uses: pnpm/action-setup@v6
+        - uses: actions/setup-node@v4
+          with:
+            node-version: lts/*
+            cache: pnpm
+        - run: pnpm install --frozen-lockfile
+        - run: pnpm format:check
+        - run: pnpm turbo run build typecheck lint
+        - run: pnpm turbo run test
