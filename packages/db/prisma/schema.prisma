@@ -23,6 +23,11 @@ model User {
 
   members     Member[]
   invitations Invitation[]
+  
+  projectsCreated Project[]
+  ticketsCreated  Ticket[]
+  ticketComments  TicketComment[]
+  ticketActivity  TicketActivity[]  
 
   @@unique([email])
   @@map("user")
@@ -86,7 +91,14 @@ model Organization {
   createdAt   DateTime
   metadata    String?
   members     Member[]
-  invitations Invitation[]
+  invitations    Invitation[]
+  projects       Project[]
+  statuses       TicketStatus[]
+  tickets        Ticket[]
+  labels         Label[]
+  ticketLabels   TicketLabel[]
+  ticketComments TicketComment[]
+  ticketActivity TicketActivity[]
 
   @@unique([slug])
   @@map("organization")
@@ -100,6 +112,7 @@ model Member {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
   createdAt      DateTime
+  ticketsAssigned Ticket[] @relation("TicketAssignee")
 
   @@index([organizationId])
   @@index([userId])
@@ -121,4 +134,185 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+
+// TICKETS
+
+enum StatusCategory {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TicketPriority {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActivityType {
+  TICKET_CREATED
+  TITLE_CHANGED
+  DESCRIPTION_CHANGED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  ASSIGNEE_CHANGED
+  DUE_DATE_CHANGED
+  LABEL_ADDED
+  LABEL_REMOVED
+  COMMENT_ADDED
+  TICKET_DELETED
+  TICKET_RESTORED
+}
+
+model Project {
+  id               String    @id @default(cuid())
+  organizationId   String
+  name             String
+  key              String
+  description      String?
+  nextTicketNumber Int       @default(1)
+  archivedAt       DateTime?
+  createdById      String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  statuses     TicketStatus[]
+  tickets      Ticket[]
+
+  @@unique([organizationId, key])
+  @@unique([id, organizationId])
+  @@index([organizationId, archivedAt])
+  @@map("project")
+}
+
+model TicketStatus {
+  id             String         @id @default(cuid())
+  organizationId String
+  projectId      String
+  name           String
+  category       StatusCategory
+  position       Float
+  color          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project      @relation(fields: [projectId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  tickets      Ticket[]
+
+  @@unique([projectId, name])
+  @@unique([id, organizationId])
+  @@index([projectId, position])
+  @@map("ticket_status")
+}
+
+model Ticket {
+  id               String         @id @default(cuid())
+  organizationId   String
+  projectId        String
+  number           Int
+  title            String
+  description      String?
+  statusId         String
+  priority         TicketPriority @default(NONE)
+  position         Float
+  assigneeMemberId String?
+  createdById      String
+  parentId         String?
+  dueDate          DateTime?
+  completedAt      DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project           @relation(fields: [projectId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  status       TicketStatus      @relation(fields: [statusId, organizationId], references: [id, organizationId], onDelete: Restrict)
+  assignee     Member?           @relation("TicketAssignee", fields: [assigneeMemberId], references: [id], onDelete: SetNull)
+  createdBy    User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  parent       Ticket?           @relation("Subtasks", fields: [parentId], references: [id], onDelete: SetNull)
+  subtasks     Ticket[]          @relation("Subtasks")
+  labels       TicketLabel[]
+  comments     TicketComment[]
+  activity     TicketActivity[]
+
+  @@unique([projectId, number])
+  @@unique([id, organizationId])
+  @@index([organizationId, projectId, statusId, position])
+  @@index([organizationId, assigneeMemberId])
+  @@index([organizationId, dueDate])
+  @@index([parentId])
+  @@map("ticket")
+}
+
+model Label {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  color          String
+  createdAt      DateTime @default(now())
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tickets      TicketLabel[]
+
+  @@unique([organizationId, name])
+  @@unique([id, organizationId])
+  @@map("label")
+}
+
+model TicketLabel {
+  ticketId       String
+  labelId        String
+  organizationId String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  ticket       Ticket       @relation(fields: [ticketId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  label        Label        @relation(fields: [labelId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@id([ticketId, labelId])
+  @@index([labelId])
+  @@map("ticket_label")
+}
+
+model TicketComment {
+  id             String    @id @default(cuid())
+  organizationId String
+  ticketId       String
+  authorId       String
+  body           String
+  editedAt       DateTime?
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  ticket       Ticket       @relation(fields: [ticketId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  author       User         @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([ticketId, createdAt])
+  @@map("ticket_comment")
+}
+
+model TicketActivity {
+  id             String       @id @default(cuid())
+  organizationId String
+  ticketId       String
+  actorId        String
+  type           ActivityType
+  data           Json?
+  createdAt      DateTime     @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  ticket       Ticket       @relation(fields: [ticketId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  actor        User         @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([ticketId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("ticket_activity")
 }
