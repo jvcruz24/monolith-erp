@@ -14,7 +14,8 @@
     "db:logs": "docker compose logs -f postgres",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "turbo run test"
   },
   "keywords": [],
   "author": "",
