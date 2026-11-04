@@ -5,8 +5,10 @@ export default defineConfig({
   // added by `nest g library`. Requires Vite 8, which ships this option.
   resolve: { tsconfigPaths: true },
   test: {
-    globals: true,
-    root: "./",
-    include: ["**/*.spec.ts"],
+    include: ["test/**/*.test.ts"],
+    globalSetup: ["./test/global-setup.ts"],
+    setupFiles: ["./test/setup-env.ts"],
+    fileParallelism: false,
+    testTimeout: 20000,
   },
 });

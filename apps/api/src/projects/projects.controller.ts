@@ -10,8 +10,8 @@ export class ProjectsController {
   constructor(private readonly projects: ProjectsService) {}
 
   @Get()
-  list(@ActiveOrg() organizationId: string) {
-    return this.projects.list(organizationId);
+  list(@Session() session: UserSession, @ActiveOrg() organizationId: string) {
+    return this.projects.list(session.user.id, organizationId);
   }
 
   @Post()
