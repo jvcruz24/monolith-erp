@@ -16,7 +16,8 @@ export class ProjectsService {
     private readonly access: AccessService,
   ) {}
 
-  list(organizationId: string) {
+  async list(userId: string, organizationId: string) {
+    await this.access.require(userId, organizationId, "project:read");
     return this.prisma.forOrg(organizationId).project.findMany({
       where: { archivedAt: null },
       orderBy: { createdAt: "asc" },
