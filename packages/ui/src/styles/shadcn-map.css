@@ -1,0 +1,56 @@
+/* shadcn adapter layer. Imported after globals.css so it runs after the
+   `initial` resets there. */
+
+/* 1. shadcn color names -> MonolithErp semantic tokens */
+@theme inline {
+  --color-background: var(--mon-bg-canvas);
+  --color-foreground: var(--mon-text-primary);
+
+  --color-card: var(--mon-bg-surface);
+  --color-card-foreground: var(--mon-text-primary);
+  --color-popover: var(--mon-bg-raised);
+  --color-popover-foreground: var(--mon-text-primary);
+
+  --color-primary: var(--mon-action-primary-bg);
+  --color-primary-foreground: var(--mon-action-primary-text);
+
+  --color-secondary: var(--mon-bg-subtle);
+  --color-secondary-foreground: var(--mon-text-primary);
+  --color-muted: var(--mon-bg-subtle);
+  --color-muted-foreground: var(--mon-text-secondary);
+
+  /* shadcn's "accent" is a neutral hover highlight, not the brand violet.
+     The violet is action-accent and the accent-* scale. */
+  --color-accent: var(--mon-bg-subtle);
+  --color-accent-foreground: var(--mon-text-primary);
+
+  /* Background only. For error TEXT use text-error-text (see contrast notes). */
+  --color-destructive: var(--mon-error-solid);
+
+  --color-border: var(--mon-border-default);
+  /* Form-control boundaries need 3:1; border.default is 1.5:1. */
+  --color-input: var(--mon-border-strong);
+  --color-ring: var(--mon-focus-ring);
+}
+
+@theme static {
+  /* 2. shadcn writes text-base, the tokens call the same size md */
+  --text-base: var(--text-md);
+  --text-base--line-height: var(--text-md--line-height);
+
+  /* 3. Layout tokens proposed in the design brief (section 13), pending approval */
+  --container-form: 24rem;
+  --container-column: 18rem;
+  --container-panel: 30rem;
+  --container-sidebar: 15rem;
+
+  /* 4. Fonts: next/font supplies the --font-* variables, the names are the fallback */
+  --font-display:
+    var(--font-instrument-serif, "Instrument Serif"), Georgia,
+    "Times New Roman", serif;
+  --font-sans:
+    var(--font-inter, "Inter"), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono, "JetBrains Mono"), ui-monospace, "Cascadia Code",
+    Consolas, monospace;
+}

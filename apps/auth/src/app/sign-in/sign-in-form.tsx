@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@repo/ui/components/button";
 import { FieldError, FieldGroup } from "@repo/ui/components/field";
 import { AuthShell } from "@/components/auth-shell";
-import { TextField } from "@/components/text-field";
+import { TextField } from "@repo/ui/components/text-field";
 import { authClient } from "@/lib/auth-client";
 
 export function SignInForm({ next }: { next: string }) {
